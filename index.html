@@ -27,6 +27,7 @@
             <div class="table" id="log_table"></div>
         </div>
 
+        <!-- 施錠/解錠ステータス, ボタン, ログ出力 -->
         <script type="text/javascript">
             var sd = document.getElementById("status");
             var ld = document.getElementById("lock");
@@ -50,6 +51,7 @@
             });
         </script>
 
+        <!-- 施錠/解錠ボタンクリック CGI送信 -->
         <script type="text/javascript">
             function btn_click() {
                 var status_id = document.getElementById('btn').value;
