@@ -95,7 +95,6 @@ void smartlock()
     Serial.println("Authentication...");
     oled.drawString(oled.getWidth() / 2, oled.getHeight() / 2 - 16, "Authentication");
     oled.display();
-    delay(5000);
   }
 
   oled.clear(); // 画面初期化
