@@ -40,6 +40,13 @@ class FaceaddrAuth():
         # ESP32から画像取得
         file = io.BytesIO(urllib.request.urlopen('http://192.168.1.12').read())
         frame = Image.open(file)
+
+        # 保存
+        frame.save(os.path.join('/var/www/cgi-bin/img/', 'log'+str(self.cnt)+'.jpg'))
+        if self.cnt == 10:
+            self.cnt = 0
+        self.cnt += 1
+
         frame = np.array(frame, dtype=np.uint8)
 
         # 顔検出
@@ -82,8 +89,8 @@ class FaceaddrAuth():
 class MacaddrAuth():
     def __init__(self):
         # スマホ情報
-        ip = "192.168.1.*"
-        macaddr = "**:**:**:**:**:**"
+        ip = "192.168.1.2"
+        macaddr = "3c:01:ef:01:ca:c8"
     
         self.ping = "ping " + ip + " -c 1 -s 1 > /dev/null"
         self.arp_serch = "arp -a | grep " + macaddr
