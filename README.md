@@ -56,6 +56,8 @@ BBB.himazin331.comをSSL/TLS暗号化させれば楽なのだが、私のネッ�
 - 適当なモバイルバッテリー
 - 3Dプリンタ (ガワ造形)
 
+**部品表**https://docs.google.com/spreadsheets/d/1f1W85JDuBkQEPj0Cgu2Epr-7-u2uk7oBen7yUr_DpZg/edit?usp=sharing
+
 ## 使用言語
 - Python
 - C/C++
