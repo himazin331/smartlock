@@ -91,8 +91,8 @@ class FaceaddrAuth():
 class MacaddrAuth():
     def __init__(self):
         # スマホ情報
-        ip = "192.168.1.2"
-        macaddr = "3c:01:ef:01:ca:c8"
+        ip = "192.168.1.*"
+        macaddr = "**:**:**:**:**:**"
     
         self.ping = "ping " + ip + " -c 1 -s 1 > /dev/null"
         self.arp_serch = "arp -a | grep " + macaddr
