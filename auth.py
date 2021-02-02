@@ -36,6 +36,8 @@ class FaceaddrAuth():
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
 
+        self.cnt = 1
+
     def run(self):
         # ESP32から画像取得
         file = io.BytesIO(urllib.request.urlopen('http://192.168.1.12').read())
@@ -175,4 +177,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
