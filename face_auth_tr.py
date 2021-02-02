@@ -42,9 +42,10 @@ class Trainer():
 
         his = self.model.fit(train_img, train_lab, batch_size=batch_size, epochs=epoch)
 
-        # 保存
-        out_path = os.path.join(out_dir, "face_recog_tf.h5")
-        self.model.save_weights(out_path)
+        # tflite形式で保存
+        converter = tf.lite.TFLiteConverter.from_keras_model(self.model)
+        tflite_model = converter.convert()
+        open("./converted_model.tflite", "wb").write(tflite_model)
 
         return his
 
@@ -124,7 +125,7 @@ def main():
     os.makedirs(out_dir, exist_ok=True) # フォルダ作成
     img_size = 96       # 画像サイズ(N x N)
     channel = 3         # 出力チャンネル数
-    batch_size = 128     # ミニバッチサイズ
+    batch_size = 32     # ミニバッチサイズ
     epoch = 8          # 訓練回数
 
     # 設定情報出力
