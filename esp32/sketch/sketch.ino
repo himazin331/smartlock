@@ -26,7 +26,6 @@ static WiFiUDP udp;
 static const char *raspip = "192.168.1.8";
 static const int raspport = 6100;
 
-int send_udp_flg = 0; // PIR反応フラグ 送信フラグ
 char udp_data[128]; // UDP受信データ
 
 extern void startCameraServer();
@@ -75,17 +74,11 @@ void smartlock()
     // ボタン反応 有効
     button.tick();
 
-    // PIR反応フラグ送信
-    if (send_udp_flg == 0)
-    {
-      // PIR反応フラグをRaspに送信
-      udp.beginPacket(raspip, raspport);
-      udp.write('1');
-      udp.endPacket();
-      delay(500);
-
-      send_udp_flg = 1; // UDP送信フラグ True
-    }
+    // PIR反応フラグをRaspに送信
+    udp.beginPacket(raspip, raspport);
+    udp.write('1');
+    udp.endPacket();
+    delay(500);
     
     oled.clear();
 
@@ -105,8 +98,6 @@ void smartlock()
   oled.drawString(oled.getWidth() / 2, oled.getHeight() / 2 - 16, "SmartLock");
   oled.drawString(oled.getWidth() / 2, oled.getHeight() / 2, "System");
   oled.display();
-
-  send_udp_flg = 0; // UDP送信フラグ False
 }
 
 // 外部電源供給 セットアップ
@@ -292,7 +283,7 @@ void setup()
   // IPアドレス情報 シリアルモニター出力
   Serial.print("IP Address: "); Serial.println(ipAddress);
 }
-int test_flg = 0;
+
 // ディスプレイ出力
 void loop()
 {
