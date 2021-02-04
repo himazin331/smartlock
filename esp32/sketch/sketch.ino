@@ -16,8 +16,8 @@
 #define TIME_TO_SLEEP  5 // 自動スリープになる時間(秒)
 
 // 無線LAN情報
-#define WIFI_SSID   "rs500m-6ae9a6-1"
-#define WIFI_PASSWD "7b8b88151fc22"
+#define WIFI_SSID   "*************"
+#define WIFI_PASSWD "*************"
 String macAddress = ""; // MACアドレス
 String ipAddress = "";  // IPアドレス
 
