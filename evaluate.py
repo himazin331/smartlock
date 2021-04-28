@@ -1,17 +1,14 @@
-import numpy as np
-
-import os
-import sys
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # TFメッセージ非表示
 
 import tensorflow as tf
-import tensorflow.keras.layers as kl
 import cv2
+import numpy as np
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # TFメッセージ非表示
+
 
 def main():
-
-    evadir = os.path.abspath("./face_data") # 評価データフォルダ
+    evadir = os.path.abspath("./face_data")  # 評価データフォルダ
     param = os.path.abspath("converted_model.tflite")   # モデル
 
     # モデル読み込み
@@ -31,13 +28,12 @@ def main():
     label = 0
 
     # 評価
-    for eva_dir in os.listdir(evadir): 
-        
+    for eva_dir in os.listdir(evadir):
         print("Evaluation Dir: {}".format(eva_dir))
 
         eva_imgdir = os.path.join(evadir, eva_dir)
         eva_imgs = os.listdir(eva_imgdir)
-    
+
         # JPEG形式の画像のみ評価
         for img_name in [f for f in eva_imgs if ('jpg' in f)]:
             t += 1
@@ -81,6 +77,7 @@ def main():
     print("\nTotal: {0} Positive: {1} Negative: {2}".format(tt, tp, tn))
     tpar = (tp / tt) * 100
     print("acc_par: {:.2f}\n".format(tpar))
-    
+
+
 if __name__ == "__main__":
     main()
