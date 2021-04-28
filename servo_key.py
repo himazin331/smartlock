@@ -5,10 +5,11 @@ import pytz
 import csv
 import os
 
+
 class key():
     def __init__(self):
-        self.swpin = 3 # MOS-FET制御信号ピン
-        self.pin = 14 # パルス信号ピン
+        self.swpin = 3  # MOS-FET制御信号ピン
+        self.pin = 14   # パルス信号ピン
         self.pi = pigpio.pi()
 
     # 施錠
@@ -22,7 +23,7 @@ class key():
         self.pi.write(self.swpin, 0)
         time.sleep(0.5)
 
-        self.writelog("Lock") # ログ書き込み
+        self.writelog("Lock")  # ログ書き込み
 
     # 解錠
     def unlock(self):
@@ -35,7 +36,7 @@ class key():
         self.pi.write(self.swpin, 0)
         time.sleep(0.5)
 
-        self.writelog("Unlock") # ログ書き込み
+        self.writelog("Unlock")  # ログ書き込み
 
     # ログ書き込み
     def writelog(self, str):
@@ -49,7 +50,7 @@ class key():
         # ログ未存在なら作成
         if not os.path.exists('/var/www/html/log/log.csv'):
             with open('/var/www/html/log/log.csv', 'w') as f:
-                os.chmod('/var/www/html/log/log.csv', 0o777) # フルコントロール権限
+                os.chmod('/var/www/html/log/log.csv', 0o777)  # フルコントロール権限
 
                 writer = csv.writer(f)
                 writer.writerow(['----/--/-- --:--:--', "Lock"])
@@ -58,25 +59,25 @@ class key():
         # ログ読み込み
         with open('/var/www/html/log/log.csv', 'r') as f:
             reader = csv.reader(f)
-            l = [row[0]+"\t"+row[1] for row in reader]
+            logs = [row[0] + "\t" + row[1] for row in reader]
 
         # 現在のステータス取得
-        if "Lock" in l[-1]:
+        if "Lock" in logs[-1]:
             r['status'] = 1
-        elif "Unlock" in l[-1]:
+        elif "Unlock" in logs[-1]:
             r['status'] = 0
 
-        l.reverse()
-        r['log'] = l
+        logs.reverse()
+        r['log'] = logs
 
         # ログ行数が11行以上なら削除
-        if len(l) > 10:
-            os.remove('/var/www/html/log/log.csv') # 消去
+        if len(logs) > 10:
+            os.remove('/var/www/html/log/log.csv')  # 消去
             # 直近のログ１つのみ書き込み
             with open('/var/www/html/log/log.csv', 'w') as f:
-                os.chmod('/var/www/html/log/log.csv', 0o777) # フルコントロール権限
+                os.chmod('/var/www/html/log/log.csv', 0o777)  # フルコントロール権限
 
                 writer = csv.writer(f)
-                writer.writerow(l[0].split('\t'))
+                writer.writerow(logs[0].split('\t'))
 
         return r
