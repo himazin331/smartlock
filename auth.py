@@ -1,28 +1,25 @@
+import tensorflow as tf
+
+import servo_key
+
 import io
 import urllib
-from urllib.request import urlopen
 
 from PIL import Image
 import numpy as np
 import cv2
 
-import sys
 import os
-import time
-
 import subprocess as sp
-from socket import *
+from socket import socket, AF_INET, SOCK_DGRAM, timeout
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # TFメッセージ非表示
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # TFメッセージ非表示
 
-import tensorflow as tf
-
-import servo_key
 
 # 顔認証
 class FaceaddrAuth():
     def __init__(self):
-        model_file = os.path.abspath("./model/face_recog_tf.tflite") # モデル
+        model_file = os.path.abspath("./model/face_recog_tf.tflite")  # モデル
         haar_cascade = os.path.abspath("./model/haar_cascade.xml")  # haar_cascade
 
         # 顔検出器のセット
@@ -44,7 +41,7 @@ class FaceaddrAuth():
         frame = Image.open(file)
 
         # 保存
-        frame.save(os.path.join('/var/www/cgi-bin/img/', 'log'+str(self.cnt)+'.jpg'))
+        frame.save(os.path.join('/var/www/cgi-bin/img/', 'log' + str(self.cnt) + '.jpg'))
         if self.cnt == 10:
             self.cnt = 0
         self.cnt += 1
@@ -73,26 +70,27 @@ class FaceaddrAuth():
             face = face[np.newaxis, :, :]
             face = np.repeat(face[..., np.newaxis], 3, -1)
             face = tf.convert_to_tensor(face, np.float32)
-            
+
             # 顔識別
             self.interpreter.set_tensor(self.input_details[0]['index'], face)
             self.interpreter.invoke()
             y = self.interpreter.get_tensor(self.output_details[0]['index'])
 
             c = np.argmax(y)
-            if c == 0: # 認証OK
+            if c == 0:  # 認証OK
                 return True
             else:   # 認証NG
                 return False
 
         return False
 
+
 # MACアドレス認証
 class MacaddrAuth():
     def __init__(self):
         # スマホ情報
-        ip = "192.168.1.*"
-        macaddr = "**:**:**:**:**:**"
+        ip = "192.168.1.2"
+        macaddr = "3c:01:ef:01:ca:c8"
     
         self.ping = "ping " + ip + " -c 1 -s 1 > /dev/null"
         self.arp_serch = "arp -a | grep " + macaddr
@@ -100,16 +98,17 @@ class MacaddrAuth():
 
     def run(self):
         # ping送信
-        prc = sp.run(self.ping, shell=True)
+        sp.run(self.ping, shell=True)
         # ターゲットMACアドレスの存在確認
         res = sp.run(self.arp_serch, shell=True, stdout=sp.PIPE, text=True)
         # ターゲットMACアドレス消去
-        pre = sp.run(self.arp_delete, shell=True)
+        sp.run(self.arp_delete, shell=True)
 
-        if res.returncode == 0: # 認証OK
+        if res.returncode == 0:  # 認証OK
             return True
         else:   # 認証NG
             return False
+
 
 class UDP():
     def __init__(self):
@@ -140,6 +139,7 @@ class UDP():
         data, addr = self.socket.recvfrom(self.BUFSIZE)
         return data, addr
 
+
 def main():
     udp = UDP()
 
@@ -158,7 +158,7 @@ def main():
                 udp.sendUDP("lock")
                 # PIR反応フラグ受信
                 data, _ = udp.receiveUDP()
-            except timeout as err:
+            except timeout:
                 continue
 
             # 人を検知
@@ -174,6 +174,7 @@ def main():
                     if ma_result:
                         # 解錠
                         KEY.unlock()
+
 
 if __name__ == '__main__':
     main()
