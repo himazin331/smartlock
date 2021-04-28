@@ -1,44 +1,43 @@
 import cv2
-import sys
 import os
 import mimetypes
 import tensorflow as tf
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # TFメッセージ非表示
-
-from PIL import Image
 import numpy as np
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # TFメッセージ非表示
+
 
 # 動画->画像変換
 def video2img(imgs_dir):
     print("___Converting video to image...")
 
     for c in os.listdir(imgs_dir):
-        d = os.path.join(imgs_dir, c) # 動画パス
+        d = os.path.join(imgs_dir, c)  # 動画パス
         print("Video file: {}".format(d))
 
         # 対応MIMEタイプ -> video
         mime = mimetypes.guess_type(c)
         # キャッシュファイルをスルー
-        if mime[0] == None:
+        if mime[0] is None:
             print("Unsupported file extension")
             continue
-        elif 'video' not in mime[0]: # videoでないものはスルー
+        elif 'video' not in mime[0]:  # videoでないものはスルー
             print("Unsupported file extension")
             continue
 
         # 動画読み込み
         mv = cv2.VideoCapture(d)
-        for f in range(int(mv.get(cv2.CAP_PROP_FRAME_COUNT))-1):
+        for f in range(int(mv.get(cv2.CAP_PROP_FRAME_COUNT)) - 1):
             # フレーム取得
             _, frame = mv.read()
 
             # 保存
-            print(imgs_dir+"\\"+c+str(f)+".jpg")
-            cv2.imwrite(imgs_dir+"\\"+c+str(f)+".jpg", frame)
+            print(imgs_dir + "\\" + c + str(f) + ".jpg")
+            cv2.imwrite(imgs_dir + "\\" + c + str(f) + ".jpg", frame)
 
         mv.release()
     print("___Successfully completed")
+
 
 # 顔領域切り取り
 def face_crop(imgs_dir, out_dir, img_size, channel, index, HAAR_FILE):
@@ -57,10 +56,10 @@ def face_crop(imgs_dir, out_dir, img_size, channel, index, HAAR_FILE):
         # 対応MIMEタイプ -> image
         mime = mimetypes.guess_type(img_name)
         # キャッシュファイルをスルー
-        if mime[0] == None:
+        if mime[0] is None:
             print("Unsupported file extension")
             continue
-        elif 'image' not in mime[0]: # imageでないものはスルー
+        elif 'image' not in mime[0]:  # imageでないものはスルー
             print("Unsupported file extension")
             continue
 
@@ -69,7 +68,7 @@ def face_crop(imgs_dir, out_dir, img_size, channel, index, HAAR_FILE):
         
         # チャンネル数 -> 1
         if channel == 1:
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # グレースケール変換
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # グレースケール変換
         face = cascade.detectMultiScale(img)  # 顔を検出
 
         # 顔が検出されなかったら
@@ -84,22 +83,22 @@ def face_crop(imgs_dir, out_dir, img_size, channel, index, HAAR_FILE):
                 h = face[n][3]
 
                 # 顔の切り取り
-                face_cut = img[y:y+h, x:x+w] 
+                face_cut = img[y:y + h, x:x + w]
                 # リサイズ
                 face_img = cv2.resize(face_cut, (img_size, img_size))
 
                 # TFが使える形に加工
                 face_img_d = face_img[None, :, :, np.newaxis]
 
-                face_img_1 = tf.image.random_brightness(face_img_d, 0.15, seed=None) # 明度ランダム変更
+                face_img_1 = tf.image.random_brightness(face_img_d, 0.15, seed=None)  # 明度ランダム変更
     
                 # 保存
                 result_img_name = 'data' + str(index) + '.jpg'
-                cv2.imwrite(os.path.join(true_dir, result_img_name), face_img) # オリジナル
+                cv2.imwrite(os.path.join(true_dir, result_img_name), face_img)  # オリジナル
 
                 face_img_1 = np.array(face_img_1[0, :, :, 0])
                 result_img_name = 'data_1_' + str(index) + '.jpg'
-                cv2.imwrite(os.path.join(true_dir, result_img_name), face_img_1) # 明度変更画像
+                cv2.imwrite(os.path.join(true_dir, result_img_name), face_img_1)  # 明度変更画像
 
                 index += 1
         
@@ -107,6 +106,7 @@ def face_crop(imgs_dir, out_dir, img_size, channel, index, HAAR_FILE):
                 print("Processing success!!")
 
     print("___Successfully completed")
+
 
 def main():
     # 動画->画像変換の有無
@@ -118,13 +118,13 @@ def main():
         # 動画->画像変換
         video2img(data_dir)
     
-    # 画像フォルダ 
-    imgs_dir = os.path.abspath("face_data")
+    # 画像フォルダ
+    imgs_dir = os.path.abspath("img")
     # 保存先フォルダ
     out_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "face_data")
     img_size = 96   # 画像サイズ(N x N)
     channel = 1     # 出力チャンネル数
-    begin_index = 1 # ファイル名開始インデックス
+    begin_index = 1070  # ファイル名開始インデックス
     # Haar-cascadeファイル
     haar_cascade = os.path.abspath("haar_cascade.xml")
 
@@ -140,6 +140,7 @@ def main():
 
     # 顔領域切り取り
     face_crop(imgs_dir, out_dir, img_size, channel, begin_index, haar_cascade)
+
 
 if __name__ == '__main__':
     main()
