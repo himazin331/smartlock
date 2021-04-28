@@ -2,7 +2,6 @@ from PIL import Image
 import os
 import io
 import urllib
-from urllib.request import urlopen
 
 
 cnt = 0
@@ -12,7 +11,7 @@ while True:
     frame = Image.open(file)
 
     # 保存
-    frame.save(os.path.join('./img/', 'log'+str(cnt)+'.jpg'))
+    frame.save(os.path.join('./img/', 'log' + str(cnt) + '.jpg'))
     if cnt == 1200:
         break
     cnt += 1
